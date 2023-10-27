@@ -27,14 +27,14 @@ export default function Header() {
     }
 
     return (
-        <Row className='text-white mt-1'>
+        <Row className='text-black mt-1'>
             <Col md="auto">
                 {greeting }
             </Col>
-            <Col md="auto mb-2">
+            <Col md="auto">
                 {time}
             </Col>
-            <hr/>
+            <hr className='mt-2'/>
         </Row>
     );
 }

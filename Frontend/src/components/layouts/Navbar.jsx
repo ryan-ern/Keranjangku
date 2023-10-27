@@ -42,7 +42,7 @@ export default function Navigation() {
 
     
     return (
-        <Navbar expand="lg" bg="dark" data-bs-theme="dark" className='p-3'>
+        <Navbar expand="lg" bg="primary" className='px-3 pb-3'>
             <Container>
                 <Navbar.Brand>Keranjangku</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
