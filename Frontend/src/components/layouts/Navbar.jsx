@@ -1,11 +1,19 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { logoutData } from '../../redux/actions';
 
 export default function Navigation() {
     const location = useLocation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(logoutData(navigate)); // Dispatch the logout action
+    };
 
     const removeActivation = (items) => {
         for (let i = 0; i < items.length; ++i) {
@@ -54,13 +62,13 @@ export default function Navigation() {
                             </li>
                         </ul>
 
-                        {/* <ul className="navbar-nav">
+                        <ul className="navbar-nav">
                             <li className="nav-item">
-                                <Link to="/ryanporto/panel/projects" className='nav-link'>Whatever I&apos;ve made</Link>
+                                <Link to="#" className='nav-link' onClick={handleLogout}>Logout</Link>
                             </li>
                         </ul>
 
-                        <ul className="navbar-nav">
+                        {/*<ul className="navbar-nav">
                             <li className="nav-item">
                                 <Link to="/ryanporto/panel/api/news" className='nav-link'>New&apos;s</Link>
                             </li>

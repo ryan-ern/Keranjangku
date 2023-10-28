@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import {Row, Col} from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 
 export default function Header() {
+    const data = useSelector((state) => state?.dataAuth);
 
     const [time, setTime] = useState(new Date().toLocaleTimeString());
 
@@ -29,7 +31,7 @@ export default function Header() {
     return (
         <Row className='text-black mt-1'>
             <Col md="auto">
-                {greeting }
+                {greeting }{data?.username}
             </Col>
             <Col md="auto">
                 {time}

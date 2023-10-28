@@ -1,11 +1,13 @@
 import {
     REGISTER, REGISTER_SUCCESS, REGISTER_FAILED,
-    LOGIN, LOGIN_SUCCESS, LOGIN_FAILED, GET_AUTH_INFO, GET_AUTH_INFO_SUCCESS, GET_AUTH_INFO_401
+    LOGIN, LOGIN_SUCCESS, LOGIN_FAILED, GET_AUTH_INFO, GET_AUTH_INFO_SUCCESS, GET_AUTH_INFO_401, LOGOUT, LOGOUT_SUCCESS
 } from "./actionTypes";
 
 const initialState = {
     loading: false,
-    data: [],
+    dataRegister: [],
+    dataLogin: [],
+    dataAuth:[],
     isLogin: false,
     error: ''
 }
@@ -20,7 +22,7 @@ const reducer = (state = initialState, action) => {
     case REGISTER_SUCCESS:
         return {
             loading: false,
-            data: action.payload,
+            dataRegister: action.payload,
         };
     case REGISTER_FAILED:
         return {
@@ -34,14 +36,14 @@ const reducer = (state = initialState, action) => {
         };
     case LOGIN_SUCCESS:
         return {
-            data: action.payload,
+            dataLogin: action.payload,
             isLogin: true,
         };
     case LOGIN_FAILED:
         return {
             loading: false,
             error: action.payload,
-            isLogin: true,
+            isLogin: false,
         };
     case GET_AUTH_INFO:
         return {
@@ -50,7 +52,7 @@ const reducer = (state = initialState, action) => {
     case GET_AUTH_INFO_SUCCESS:
         return {
             loading: false,
-            data: action.payload,
+            dataAuth: action.payload,
             isLogin: true,
         };
     case GET_AUTH_INFO_401:
@@ -60,6 +62,13 @@ const reducer = (state = initialState, action) => {
             error: action.payload,
             isLogin: false,
         };
+    case LOGOUT:
+        break
+    case LOGOUT_SUCCESS:
+        return{
+            ...initialState,
+            isLogin: false,
+        }
     default:
         return state;
     }

@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Form, FloatingLabel, Container, Row, Col, Card, Alert, Spinner} from 'react-bootstrap';
 import IMAGES from '../../assets/images/images';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerData } from '../../redux/actions';
+import { getAuth } from '../../redux/actions';
 
 export default function Register() {
     const dispatch = useDispatch();
-    const data = useSelector((state) => state.data);
+    const navigate = useNavigate();
+    const data = useSelector((state) => state.dataRegister);
     const loading = useSelector((state) => state.loading);
     const [username, setUser] = useState('');
     const [password, setPassword] = useState('');
@@ -26,6 +28,14 @@ export default function Register() {
         formData.append('password', password);
         dispatch(registerData(formData));
     };
+
+    useEffect(() => {
+        dispatch(getAuth()).then((response) => {
+            if (response.isLogin) {
+                navigate("/panel");
+            }
+        });
+    }, [dispatch, navigate]);
 
     return (
         <div className="my-5 pt-sm-5">
@@ -47,12 +57,12 @@ export default function Register() {
                                 </Col>
                             </Row>
                             <Form onSubmit={handleSubmit}>
-                                {data.message === "error" && (
+                                {data?.message === "error" && (
                                     <Alert variant='danger'>
                                         {data.description}
                                     </Alert>
                                 )}
-                                {data.message === "ok" && (
+                                {data?.message === "ok" && (
                                     <Alert variant='primary'>
                                         {data.description}
                                     </Alert>

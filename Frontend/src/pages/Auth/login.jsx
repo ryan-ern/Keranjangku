@@ -10,7 +10,7 @@ import { getAuth } from '../../redux/actions';
 export default function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const data = useSelector((state) => state.data);
+    const data = useSelector((state) => state.dataLogin);
     const loading = useSelector((state) => state.loading);
     const [username, setUser] = useState('');
     const [password, setPassword] = useState('');

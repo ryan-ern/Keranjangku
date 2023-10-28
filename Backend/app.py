@@ -130,7 +130,7 @@ def register(request):
             cursor.execute(sql, (username))
             user = cursor.fetchone()
             if user:
-                return {'message': 'error', 'description': 'Username Sudah Terdaftar!'} 
+                return {'message': 'error', 'description': 'Username Sudah Terdaftar!'}
             else:
                 with connection.cursor() as cursor:
                     sql = "INSERT INTO users (username, password) VALUES (%s, %s)"
@@ -153,12 +153,18 @@ def register(request):
 def logout(request):
     auth_user = auth_jwt_verify(request)
     authentication_header = request.cookies.get('token')
+    if not authentication_header:
+        # If token is not in cookies, try to get it from local storage
+        authentication_header = request.headers.get('Authorization')
+        if authentication_header and authentication_header.startswith('Bearer '):
+            authentication_header = authentication_header.split(' ')[1]
     if auth_user:
         with connection.cursor() as cursor:
             sql = "DELETE FROM tokens WHERE jwt_token=%s"
             cursor.execute(sql, (authentication_header))
             connection.commit()
 
+        request.response.headers['Clear-Token'] = 'true'
         request.response.delete_cookie('token')
         return {
             'message': 'ok',
