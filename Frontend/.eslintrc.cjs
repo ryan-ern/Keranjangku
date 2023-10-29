@@ -36,9 +36,7 @@ module.exports = {
         'react/no-unstable-nested-components': 'off',
         'jsx-a11y/click-events-have-key-events': 'off',
         'jsx-a11y/no-static-element-interactions': 'off',
-        'react-refresh/only-export-components': [
-            'warn',
-            { allowConstantExport: true },
-        ],
+        'react-refresh/only-export-components': 'off',
+        'react-hooks/exhaustive-deps': 'off',
     },
 }

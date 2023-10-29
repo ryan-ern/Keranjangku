@@ -4,7 +4,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { logoutData } from '../../redux/actions';
+import { logoutData } from '../../redux/actions/logout';
+import IMAGES from '../../assets/images/images';
 
 export default function Navigation() {
     const location = useLocation();
@@ -50,21 +51,37 @@ export default function Navigation() {
 
     
     return (
-        <Navbar expand="lg" bg="primary" className='px-3 pb-3'>
+        <Navbar expand="lg" bg="white" className='px-3 pb-3'>
             <Container>
-                <Navbar.Brand>Keranjangku</Navbar.Brand>
+                <Navbar.Brand className='logo-text' href="https://github.com/ryan-ern/Keranjangku" target="_blank">
+                    Keranjangku
+                </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto" id="navigation">
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <Link to="/panel" className='nav-link'>Home</Link>
+                                <Link to="/panel" className='nav-link'>
+                                    <img src={IMAGES.icon2} alt="" width={18} className='me-1 mb-1'/>
+                                    Home
+                                </Link>
+                            </li>
+                        </ul>
+                        <ul className="navbar-nav">
+                            <li className="nav-item">
+                                <Link to="/panel/item-user" className='nav-link'>
+                                    <img src={IMAGES.icon4} alt="" width={18} className='me-1 mb-1'/>
+                                    Produk Anda
+                                </Link>
                             </li>
                         </ul>
 
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <Link to="#" className='nav-link' onClick={handleLogout}>Logout</Link>
+                                <Link to="#" className='nav-link' onClick={handleLogout}>
+                                    <img src={IMAGES.icon3} alt="" width={18} className='me-1 mb-1'/>
+                                    Logout
+                                </Link>
                             </li>
                         </ul>
 

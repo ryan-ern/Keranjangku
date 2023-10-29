@@ -3,8 +3,8 @@ import { Button, Form, FloatingLabel, Container, Row, Col, Card, Alert, Spinner}
 import IMAGES from '../../assets/images/images';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerData } from '../../redux/actions';
-import { getAuth } from '../../redux/actions';
+import { registerData } from '../../redux/actions/register';
+import { getAuth } from '../../redux/actions/Auth';
 
 export default function Register() {
     const dispatch = useDispatch();
@@ -42,18 +42,16 @@ export default function Register() {
             <Container>
                 <Row className="justify-content-center">
                     <Col md={8} lg={6} xl={5}>
-                        <Card className="overflow-hidden">
-                            <Row>
-                                <Col xs={8}>
-                                    <div className="p-4">
-                                        <h5>
-                                            Keranjangku Register
-                                        </h5>
-                                        <p>Register untuk dapat mengakses dashboard!</p>
+                        <Card className="overflow-hidden p-5">
+                            <Row className="flex-column-reverse flex-lg-row">
+                                <Col xs={12} lg={7}>
+                                    <div className="p-3">
+                                        <h5>Keranjangku Registrasi</h5>
+                                        <p>Registrasi untuk dapat mengakses dashboard!</p>
                                     </div>
                                 </Col>
-                                <Col className="col-4 align-self-start">
-                                    <img src={IMAGES.icon1} alt=""  width={'200px'} className="img-fluid"  />
+                                <Col xs={12} lg={4} className="mx-2 d-flex align-items-center justify-content-center">
+                                    <img src={IMAGES.icon1} alt="" width={'200px'} />
                                 </Col>
                             </Row>
                             <Form onSubmit={handleSubmit}>

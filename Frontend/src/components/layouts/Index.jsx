@@ -14,7 +14,7 @@ function Layout() {
     return (
         <div id="layout-wrapper" style={{ overflowX: 'hidden' }}>
             <Row>
-                <Col className='d-flex justify-content-center bg-primary'>
+                <Col className='d-flex justify-content-center bg-white'>
                     <Header />
                 </Col>
             </Row>

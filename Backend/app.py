@@ -2,9 +2,11 @@ from wsgiref.simple_server import make_server
 from wsgicors import CORS
 from pyramid.config import Configurator
 from pyramid.view import view_config
+from pyramid.response import FileResponse, Response
 import pymysql
 import jwt
 import datetime
+import os
 
 # Koneksi ke database MySQL
 connection = pymysql.connect(
@@ -49,7 +51,7 @@ def auth_jwt_verify(request):
     return None
 
 
-# Fungsi untuk membuat token baru dan refresh token
+# Fungsi untuk membuat token baru
 def create_tokens(user_id):
     payload = {
         'sub': user_id,
@@ -94,7 +96,7 @@ def login(request):
     else:
         return {
             'message': 'error',
-            'description': 'login failed!'
+            'description': 'Username atau Password salah!'
         }
     
 #fungsi endpoint info login
@@ -109,7 +111,8 @@ def get_auth_info(request):
         return {
             'message': 'ok',
             'username': user['username'],
-            'description': 'User is authenticated'
+            'description': 'User is authenticated',
+            'isLogin': True
         }
     else:
         return {
@@ -174,6 +177,204 @@ def logout(request):
         'message': 'error',
         'description': 'Token not found'
     }
+
+#fungsi create item
+@view_config(route_name='create-item', renderer="json", request_method="POST")
+def create_item(request):
+    auth_user = auth_jwt_verify(request)
+    if auth_user:
+        # Mendapatkan data teks dari request
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        # picture = request.POST['picture'].file
+        stok = request.POST.get('stok')
+        price = request.POST.get('price')
+
+         # Membaca data gambar dari file
+        # picture_data = picture.read()
+
+        # Mendapatkan ekstensi file gambar (contoh: .jpg, .png)
+        # picture_filename = request.POST['picture'].filename
+        # _, picture_extension = os.path.splitext(picture_filename)
+
+        # print(picture)
+
+        # Mendapatkan timestamp sekarang sebagai string
+        # timestamp = str(int(datetime.datetime.now().timestamp()))
+        # picture_path = os.path.join('img', f'{name}_{timestamp}{picture_extension}')
+        # with open(picture_path, 'wb') as picture_file:
+        #     picture_file.write(picture_data)
+
+        # Simpan data item ke dalam database
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO items (user_id, name, description, stok, price) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (auth_user['sub'], name, description, stok, price))
+            connection.commit()
+
+        return {
+            'message': 'ok',
+            'description': 'Item created successfully!'
+        }
+    else:
+        request.response.status = 401  # Unauthorized
+        return {'message': 'Unauthorized', 'description': 'Token not found'}
+    
+    # Fungsi update item
+@view_config(route_name='update-item', renderer="json", request_method="PUT")
+def update_item(request):
+    auth_user = auth_jwt_verify(request)
+    if auth_user:
+        item_id = request.matchdict.get('id')
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        stok = request.POST.get('stok')
+        price = request.POST.get('price')
+
+        with connection.cursor() as cursor:
+            sql = "UPDATE items SET name=%s, description=%s, stok=%s, price=%s WHERE id=%s AND user_id=%s"
+            cursor.execute(sql, (name, description, stok, price, item_id, auth_user['sub']))
+            connection.commit()
+
+        return {
+            'message': 'ok',
+            'description': 'Item updated successfully!'
+        }
+    else:
+        request.response.status = 401  # Unauthorized
+        return {'message': 'Unauthorized', 'description': 'Token not found'}
+    
+    # Fungsi delete item
+@view_config(route_name='delete-item', renderer="json", request_method="DELETE")
+def delete_item(request):
+    auth_user = auth_jwt_verify(request)
+    if auth_user:
+        item_id = request.matchdict.get('id')
+
+        with connection.cursor() as cursor:
+            sql = "DELETE FROM items WHERE id=%s AND user_id=%s"
+            cursor.execute(sql, (item_id, auth_user['sub']))
+            connection.commit()
+
+        return {
+            'message': 'ok',
+            'description': 'Item deleted successfully!'
+        }
+    else:
+        request.response.status = 401  # Unauthorized
+        return {'message': 'Unauthorized', 'description': 'Token not found'}
+
+# fungsi endpoint Get Data berdasarkan user_id
+@view_config(route_name='item-user', renderer="json", request_method="GET")
+def item_user(request):
+    auth_user = auth_jwt_verify(request)
+    if auth_user:
+        with connection.cursor() as cursor:
+            sql = "SELECT id, name, description, stok, price FROM items WHERE user_id = %s"
+            cursor.execute(sql, (auth_user['sub'],))
+            result = cursor.fetchall()
+
+        data = []
+        for item in result:
+            
+            item_data = {
+                'id': item['id'],
+                'name': item['name'],
+                'description': item['description'],
+                'stok': item['stok'],
+                'price': str(item['price'])
+            }
+            data.append(item_data)
+
+        return {
+            'message': 'ok',
+            'description': 'Items retrieved successfully!',
+            'data': data
+        }
+    else:
+        request.response.status = 401  # Unauthorized
+        return {'message': 'Unauthorized', 'description': 'Token not found'}
+
+# def get_image(request):
+#     # Mendapatkan nama file gambar dari parameter URL
+#     image_name = request.matchdict['image_name']
+    
+#     # Mengonversi nama file gambar ke path lokasi file
+#     image_path = os.path.join('img', image_name)
+    
+#     # Memeriksa apakah file gambar ada di server
+#     if os.path.exists(image_path):
+#         # Mengirimkan file gambar sebagai respons
+#         return FileResponse(image_path, request=request)
+#     else:
+#         # Jika file tidak ditemukan, mengirimkan respons 404 Not Found
+#         response = Response('Image not found', status=404)
+#         return response
+    
+# fungsi endpoint Get Data
+@view_config(route_name='items', renderer="json", request_method="GET")
+def items(request):
+    auth_user = auth_jwt_verify(request)
+    if auth_user:
+        with connection.cursor() as cursor:
+            sql = "SELECT id, name, description, stok, price FROM items"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+        data = []
+        for item in result:
+            # print(item['picture'])
+            item_data = {
+                'id': item['id'],
+                'name': item['name'],
+                # 'picture': request.route_url('get-image', image_name=item['picture']).replace("img%5C", ""),
+                'description': item['description'],
+                'stok': item['stok'],
+                'price': str(item['price'])
+            }
+            # print(item_data)
+            data.append(item_data)
+    else:
+        request.response.status = 401  # Unauthorized
+        return {'message': 'Unauthorized', 'description': 'Token not found'}
+
+    return {
+        'message': 'ok',
+        'description': 'Get data success!',
+        'data': data
+    }
+
+# Fungsi endpoint Get Detail Item berdasarkan ID
+@view_config(route_name='detail-item', renderer="json", request_method="GET")
+def item_detail(request):
+    auth_user = auth_jwt_verify(request)
+    if auth_user:
+        # Mendapatkan ID item dari parameter URL
+        item_id = request.matchdict['id']
+
+        with connection.cursor() as cursor:
+            sql = "SELECT id, name, description, stok, price FROM items WHERE id = %s AND user_id = %s"
+            cursor.execute(sql, (item_id, auth_user['sub']))
+            result = cursor.fetchone()
+
+        if result:
+            item_data = {
+                'id': result['id'],
+                'name': result['name'],
+                'description': result['description'],
+                'stok': result['stok'],
+                'price': str(result['price'])
+            }
+
+            return {
+                'message': 'ok',
+                'description': 'Item retrieved successfully!',
+                'data': item_data
+            }
+        else:
+            request.response.status = 404  # Not Found
+            return {'message': 'error', 'description': 'Item not found'}
+    else:
+        request.response.status = 401  # Unauthorized
+        return {'message': 'Unauthorized', 'description': 'Token not found'}
             
 if __name__ == "__main__":
     with Configurator() as config:
@@ -184,9 +385,18 @@ if __name__ == "__main__":
         config.add_route('login', '/login')
         config.add_route('auth-info', '/auth-info')
         config.add_route('logout', '/logout')
+        config.add_route('create-item', '/create-item')
+        config.add_route('item-user', '/item-user')
+        config.add_route('update-item', '/item-user/{id}/update')
+        config.add_route('delete-item', '/item-user/{id}/delete')
+        # config.add_route('get-image', '/images/{image_name}')
+        # config.add_view(get_image, route_name='get-image')
+        config.add_route('items', '/items')
+        config.add_route('detail-item', 'detail-item/{id}')
         config.scan()
         app = config.make_wsgi_app()
-        app = CORS(app, headers="*", methods="*", maxage="180", origin="*", expose_headers="*")
+        app = CORS(app, headers="*", methods="*", maxage="86400", origin="*", expose_headers="*")
     # Menjalankan aplikasi pada server lokal
     server = make_server('0.0.0.0', 6543, app)
     server.serve_forever()
+    

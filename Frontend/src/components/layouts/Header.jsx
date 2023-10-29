@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAuth } from '../../redux/actions/Auth';
 
 export default function Header() {
-    const data = useSelector((state) => state?.dataAuth);
-
+    const data = useSelector((state) => state?.dataAuth?.username);
+    const dispatch = useDispatch()
+    const name = localStorage.getItem('name')
     const [time, setTime] = useState(new Date().toLocaleTimeString());
 
     useEffect(() => {
         const interval = setInterval(() => {
             setTime(new Date().toLocaleTimeString());
         }, 1000);
-
         return () => clearInterval(interval);
     }, []);
 
-    // const storedName = localStorage.getItem('name');
+    useEffect(() => {
+        dispatch(getAuth())
+    }, [dispatch])
+
+    if (data) {
+        localStorage.setItem('name', data);
+    }
 
     const currentTime = new Date().getHours();
     let greeting;
@@ -31,7 +38,7 @@ export default function Header() {
     return (
         <Row className='text-black mt-1'>
             <Col md="auto">
-                {greeting }{data?.username}
+                {greeting }{name}
             </Col>
             <Col md="auto">
                 {time}

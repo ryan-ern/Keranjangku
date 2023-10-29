@@ -1,14 +1,22 @@
 import {
     REGISTER, REGISTER_SUCCESS, REGISTER_FAILED,
-    LOGIN, LOGIN_SUCCESS, LOGIN_FAILED, GET_AUTH_INFO, GET_AUTH_INFO_SUCCESS, GET_AUTH_INFO_401, LOGOUT, LOGOUT_SUCCESS
+    LOGIN, LOGIN_SUCCESS, LOGIN_FAILED,
+    GET_AUTH_INFO, GET_AUTH_INFO_SUCCESS, GET_AUTH_INFO_401,
+    LOGOUT, LOGOUT_SUCCESS,
+    GET_ITEM_USER, GET_ITEM_USER_SUCCESS, GET_ITEM_USER_FAILED,
+    GET_ITEM, GET_ITEM_SUCCESS, GET_ITEM_FAILED,
+    CREATE_ITEM, CREATE_ITEM_SUCCESS, CREATE_ITEM_FAILED, DELETE_ITEM, DELETE_ITEM_SUCCESS, DELETE_ITEM_FAILED, UPDATE_ITEM, UPDATE_ITEM_SUCCESS, UPDATE_ITEM_FAILED
 } from "./actionTypes";
 
 const initialState = {
     loading: false,
+    isLogin: false,
     dataRegister: [],
     dataLogin: [],
     dataAuth:[],
-    isLogin: false,
+    dataItemUser: [],
+    dataItem: [],
+    dataCreate: [],
     error: ''
 }
 
@@ -36,6 +44,7 @@ const reducer = (state = initialState, action) => {
         };
     case LOGIN_SUCCESS:
         return {
+            ...state,
             dataLogin: action.payload,
             isLogin: true,
         };
@@ -51,13 +60,12 @@ const reducer = (state = initialState, action) => {
         };
     case GET_AUTH_INFO_SUCCESS:
         return {
-            loading: false,
+            ...state,
             dataAuth: action.payload,
-            isLogin: true,
         };
     case GET_AUTH_INFO_401:
         return {
-            ...initialState ,
+            ...state ,
             loading: false,
             error: action.payload,
             isLogin: false,
@@ -66,8 +74,73 @@ const reducer = (state = initialState, action) => {
         break
     case LOGOUT_SUCCESS:
         return{
-            ...initialState,
+            ...state,
             isLogin: false,
+        }
+    case GET_ITEM_USER:
+        return {
+            ...state,
+        }
+    case GET_ITEM_USER_SUCCESS:
+        return {
+            loading: false,
+            dataItemUser: action.payload,
+            isLogin: true,
+        }
+    case GET_ITEM_USER_FAILED:
+        return {
+            error: action.payload,
+        }
+    case GET_ITEM:
+        return {
+            ...state,
+        }
+    case GET_ITEM_SUCCESS:
+        return {
+            loading: false,
+            dataItem: action.payload,
+            isLogin: true,
+        }
+    case GET_ITEM_FAILED:
+        return {
+            error: action.payload,
+        }
+    case CREATE_ITEM:
+        return {
+            ...state,
+        }
+    case CREATE_ITEM_SUCCESS:
+        return {
+            dataCreate: action.payload,
+            isLogin: true,
+        }
+    case CREATE_ITEM_FAILED:
+        return {
+            error: action.payload,
+        }
+    case DELETE_ITEM:
+        return {
+            ...state
+        }
+    case DELETE_ITEM_SUCCESS:
+        return {
+            ...state
+        }
+    case DELETE_ITEM_FAILED:
+        return {
+            error: action.payload
+        }
+    case UPDATE_ITEM:
+        return {
+            ...state
+        }
+    case UPDATE_ITEM_SUCCESS:
+        return {
+            ...state
+        }
+    case UPDATE_ITEM_FAILED:
+        return {
+            error: action.payload
         }
     default:
         return state;

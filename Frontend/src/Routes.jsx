@@ -4,10 +4,12 @@ import {
 
 import Layout from './components/layouts/Index'
 
-import Welcome from './pages/welcome'
+import ItemUser from './pages/itemUser'
 import Login from './pages/Auth/login'
 import Register from './pages/Auth/register'
 import Authenticated from './middlewares/auth.middleware'
+import Index from './pages'
+import Test from './pages/test'
 // import News from './page/News'
 // import Page404 from './page/Page404'
 // import Username from './middleware/Username'
@@ -20,6 +22,7 @@ export default function RoutesApp() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route path="" element={<Login />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register/>}/>
                 <Route path="/panel" element={(
@@ -27,7 +30,9 @@ export default function RoutesApp() {
                         <Layout />
                     </Authenticated>
                 )}>
-                    <Route index element={<Welcome />} />
+                    <Route index element={<Index />} />
+                    <Route path='/panel/item-user' element={<ItemUser />} />
+                    <Route path='/panel/test' element={<Test />} />
                     {/* <Route index element={<Home />} />
                     <Route path="/panel/api/news" element={<News />} />
                     <Route path="/panel/projects" element={<Projects />} />
