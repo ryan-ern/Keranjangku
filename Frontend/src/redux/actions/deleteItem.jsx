@@ -8,9 +8,10 @@ const deleteItem = () => {
     }
 }
 
-const deleteItemSuccess = () => {
+const deleteItemSuccess = (dataDelete) => {
     return {
         type: DELETE_ITEM_SUCCESS,
+        payload: dataDelete,
     }
 }
 
@@ -26,8 +27,9 @@ export const deleteData = (itemId) => {
     return async (dispatch) => {
         dispatch(deleteItem());
         try {
-            await axiosInstance.delete(`/item-user/${itemId}/delete`);
-            dispatch(deleteItemSuccess());
+            const data = await axiosInstance.delete(`/item-user/${itemId}/delete`);
+            dispatch(deleteItemSuccess(data.data));
+            alert(data?.data?.description)
             dispatch(getItemUserData());
         } catch (error) {
             dispatch(deleteItemFailed(error.message));

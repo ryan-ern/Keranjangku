@@ -14,7 +14,7 @@ export function Redirect({ to }) {
 export default function Authenticated({ children }) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const data = useSelector((state) => state)
+    const data = useSelector((state) => state?.dataAuth)
     useEffect(() => {
         dispatch(getAuth())
         if (!data?.isLogin) {

@@ -1,4 +1,8 @@
-import { GET_ITEM, GET_ITEM_FAILED, GET_ITEM_SUCCESS, GET_ITEM_USER, GET_ITEM_USER_FAILED, GET_ITEM_USER_SUCCESS } from "../actionTypes"
+import {
+    GET_DETAIL_ITEM, GET_DETAIL_ITEM_FAILED, GET_DETAIL_ITEM_SUCCESS,
+    GET_ITEM, GET_ITEM_FAILED, GET_ITEM_SUCCESS,
+    GET_ITEM_USER, GET_ITEM_USER_FAILED, GET_ITEM_USER_SUCCESS
+} from "../actionTypes"
 import axiosInstance from "../../helper/axios-helper"
 
 /**
@@ -62,6 +66,39 @@ export const getItemData = () => {
             dispatch(getItemSuccess(dataItem));
         } catch (error) {
             dispatch(getItemFailed(error.message));
+        }
+    };
+};
+
+/**
+ * GET ITEM BY ID
+*/
+export const getDetail = () => ({
+    type: GET_DETAIL_ITEM,
+    payload: {},
+
+})
+
+export const getDetailSuccess = (detailItem) => ({
+    type: GET_DETAIL_ITEM_SUCCESS,
+    payload: {detailItem}
+})
+
+export const getDetailFailed = (error) => ({
+    type: GET_DETAIL_ITEM_FAILED,
+    payload: {error}
+})
+
+
+export const getDetailData = (itemId) => {
+    return async (dispatch) => {
+        dispatch(getDetail());
+        try {
+            const response = await axiosInstance.get(`/detail-item/${itemId}`);
+            const dataItem = response.data.data;
+            dispatch(getDetailSuccess(dataItem));
+        } catch (error) {
+            dispatch(getDetailFailed(error.message));
         }
     };
 };

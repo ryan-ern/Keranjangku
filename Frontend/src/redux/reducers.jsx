@@ -5,18 +5,27 @@ import {
     LOGOUT, LOGOUT_SUCCESS,
     GET_ITEM_USER, GET_ITEM_USER_SUCCESS, GET_ITEM_USER_FAILED,
     GET_ITEM, GET_ITEM_SUCCESS, GET_ITEM_FAILED,
-    CREATE_ITEM, CREATE_ITEM_SUCCESS, CREATE_ITEM_FAILED, DELETE_ITEM, DELETE_ITEM_SUCCESS, DELETE_ITEM_FAILED, UPDATE_ITEM, UPDATE_ITEM_SUCCESS, UPDATE_ITEM_FAILED
+    CREATE_ITEM, CREATE_ITEM_SUCCESS, CREATE_ITEM_FAILED,
+    DELETE_ITEM, DELETE_ITEM_SUCCESS, DELETE_ITEM_FAILED,
+    UPDATE_ITEM, UPDATE_ITEM_SUCCESS, UPDATE_ITEM_FAILED,
+    GET_DETAIL_ITEM, GET_DETAIL_ITEM_SUCCESS, GET_DETAIL_ITEM_FAILED,
+    ADD_ITEM, ADD_ITEM_SUCCESS, ADD_ITEM_FAILED, GET_CART, GET_CART_SUCCESS, GET_CART_FAILED
 } from "./actionTypes";
 
 const initialState = {
     loading: false,
-    isLogin: false,
     dataRegister: [],
     dataLogin: [],
-    dataAuth:[],
+    dataAuth: {
+        isLogin: false,
+    },
     dataItemUser: [],
     dataItem: [],
     dataCreate: [],
+    dataDetail: [],
+    dataDelete:[],
+    dataAdd:[],
+    dataCart:[],
     error: ''
 }
 
@@ -46,7 +55,9 @@ const reducer = (state = initialState, action) => {
         return {
             ...state,
             dataLogin: action.payload,
-            isLogin: true,
+            dataAuth: {
+                isLogin: true,
+            },
         };
     case LOGIN_FAILED:
         return {
@@ -68,14 +79,18 @@ const reducer = (state = initialState, action) => {
             ...state ,
             loading: false,
             error: action.payload,
-            isLogin: false,
+            dataAuth: {
+                isLogin: false,
+            },
         };
     case LOGOUT:
         break
     case LOGOUT_SUCCESS:
         return{
             ...state,
-            isLogin: false,
+            dataAuth: {
+                isLogin: false,
+            },
         }
     case GET_ITEM_USER:
         return {
@@ -85,7 +100,9 @@ const reducer = (state = initialState, action) => {
         return {
             loading: false,
             dataItemUser: action.payload,
-            isLogin: true,
+            dataAuth: {
+                isLogin: true,
+            },
         }
     case GET_ITEM_USER_FAILED:
         return {
@@ -99,7 +116,9 @@ const reducer = (state = initialState, action) => {
         return {
             loading: false,
             dataItem: action.payload,
-            isLogin: true,
+            dataAuth: {
+                isLogin: true,
+            },
         }
     case GET_ITEM_FAILED:
         return {
@@ -112,7 +131,9 @@ const reducer = (state = initialState, action) => {
     case CREATE_ITEM_SUCCESS:
         return {
             dataCreate: action.payload,
-            isLogin: true,
+            dataAuth: {
+                isLogin: true,
+            },
         }
     case CREATE_ITEM_FAILED:
         return {
@@ -124,7 +145,8 @@ const reducer = (state = initialState, action) => {
         }
     case DELETE_ITEM_SUCCESS:
         return {
-            ...state
+            ...state,
+            dataDelete: action.payload
         }
     case DELETE_ITEM_FAILED:
         return {
@@ -139,6 +161,45 @@ const reducer = (state = initialState, action) => {
             ...state
         }
     case UPDATE_ITEM_FAILED:
+        return {
+            error: action.payload
+        }
+    case GET_DETAIL_ITEM:
+        return {
+            ...state
+        }
+    case GET_DETAIL_ITEM_SUCCESS:
+        return {
+            ...state,
+            dataDetail: action.payload
+        }
+    case GET_DETAIL_ITEM_FAILED:
+        return {
+            error: action.payload
+        }
+    case ADD_ITEM:
+        return {
+            ...state
+        }
+    case ADD_ITEM_SUCCESS:
+        return {
+            ...state,
+            dataAdd: action.payload
+        }
+    case ADD_ITEM_FAILED:
+        return {
+            error: action.payload
+        }
+    case GET_CART:
+        return {
+            ...state
+        }
+    case GET_CART_SUCCESS:
+        return {
+            ...state,
+            dataCart: action.payload
+        }
+    case GET_CART_FAILED:
         return {
             error: action.payload
         }

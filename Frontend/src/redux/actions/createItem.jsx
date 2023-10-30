@@ -31,6 +31,7 @@ export const createData = (formData) => {
             const response = await axiosInstance.post('/create-item', formData);
             const dataCreate = response.data;
             dispatch(createItemSuccess(dataCreate));
+            alert(dataCreate?.description)
             await dispatch(getItemUserData());
         } catch (error) {
             dispatch(createItemFailed(error.message));

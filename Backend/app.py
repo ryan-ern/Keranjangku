@@ -2,11 +2,9 @@ from wsgiref.simple_server import make_server
 from wsgicors import CORS
 from pyramid.config import Configurator
 from pyramid.view import view_config
-from pyramid.response import FileResponse, Response
 import pymysql
 import jwt
 import datetime
-import os
 
 # Koneksi ke database MySQL
 connection = pymysql.connect(
@@ -263,7 +261,7 @@ def delete_item(request):
         request.response.status = 401  # Unauthorized
         return {'message': 'Unauthorized', 'description': 'Token not found'}
 
-# fungsi endpoint Get Data berdasarkan user_id
+# fungsi endpoint Get Data berdasarkan akun
 @view_config(route_name='item-user', renderer="json", request_method="GET")
 def item_user(request):
     auth_user = auth_jwt_verify(request)
@@ -281,7 +279,7 @@ def item_user(request):
                 'name': item['name'],
                 'description': item['description'],
                 'stok': item['stok'],
-                'price': str(item['price'])
+                'price': int(item['price'])
             }
             data.append(item_data)
 
@@ -328,7 +326,7 @@ def items(request):
                 # 'picture': request.route_url('get-image', image_name=item['picture']).replace("img%5C", ""),
                 'description': item['description'],
                 'stok': item['stok'],
-                'price': str(item['price'])
+                'price': int(item['price'])
             }
             # print(item_data)
             data.append(item_data)
@@ -361,7 +359,7 @@ def item_detail(request):
                 'name': result['name'],
                 'description': result['description'],
                 'stok': result['stok'],
-                'price': str(result['price'])
+                'price': int(result['price'])
             }
 
             return {
@@ -375,6 +373,129 @@ def item_detail(request):
     else:
         request.response.status = 401  # Unauthorized
         return {'message': 'Unauthorized', 'description': 'Token not found'}
+    
+#fungsi tambah item ke cart
+@view_config(route_name='add-item', renderer="json", request_method="POST")
+def add_item(request):
+    auth_user = auth_jwt_verify(request)
+    if auth_user:
+        item_id = request.POST.get('item_id')
+        count_item = int(request.POST.get('count_item'))
+
+        # Periksa apakah item sudah ada di keranjang
+        with connection.cursor() as cart_cursor:
+            sql_check_item_in_cart = "SELECT id, count_item FROM cart WHERE user_id=%s AND item_id=%s"
+            cart_cursor.execute(sql_check_item_in_cart, (auth_user['sub'], item_id))
+            existing_item = cart_cursor.fetchone()
+
+            if existing_item:
+                # Item sudah ada di keranjang, update stok di tabel items
+                with connection.cursor() as cursor:
+                    sql_check_stok = "SELECT stok FROM items WHERE id=%s"
+                    cursor.execute(sql_check_stok, (item_id,))
+                    result = cursor.fetchone()
+
+                    if result and result['stok'] >= count_item:
+                        # Kurangi stok di tabel items
+                        new_stok = result['stok'] - count_item
+                        sql_update_stok = "UPDATE items SET stok=%s WHERE id=%s"
+                        cursor.execute(sql_update_stok, (new_stok, item_id))
+                        connection.commit()
+
+                        # Update jumlah item di keranjang
+                        new_count_item = existing_item['count_item'] + count_item
+                        sql_update_cart = "UPDATE cart SET count_item=%s WHERE id=%s"
+                        cart_cursor.execute(sql_update_cart, (new_count_item, existing_item['id']))
+                        connection.commit()
+
+                        return {
+                            'message': 'ok',
+                            'description': 'Success add to cart',
+                        }
+                    else:
+                        # Stok tidak mencukupi, kirim respons error
+                        return {'message': 'error', 'description': 'Stok item tidak mencukupi'}
+            else:
+                # Item belum ada di keranjang, tambahkan ke keranjang
+                with connection.cursor() as cursor:
+                    sql_check_stok = "SELECT stok FROM items WHERE id=%s"
+                    cursor.execute(sql_check_stok, (item_id,))
+                    result = cursor.fetchone()
+
+                    if result and result['stok'] >= count_item:
+                        # Kurangi stok di tabel items
+                        new_stok = result['stok'] - count_item
+                        sql_update_stok = "UPDATE items SET stok=%s WHERE id=%s"
+                        cursor.execute(sql_update_stok, (new_stok, item_id))
+                        connection.commit()
+
+                        # Tambahkan item ke dalam tabel cart
+                        sql_insert_cart = "INSERT INTO cart (user_id, item_id, count_item) VALUES (%s, %s, %s)"
+                        cart_cursor.execute(sql_insert_cart, (auth_user['sub'], item_id, count_item))
+                        connection.commit()
+
+                        return {
+                            'message': 'ok',
+                            'description': 'Success add to cart',
+                        }
+                    else:
+                        # Stok tidak mencukupi, kirim respons error
+                        return {'message': 'error', 'description': 'Stok item tidak mencukupi'}
+    else:
+     # Pengguna tidak terautentikasi, kirim respons error
+        request.response.status = 401  # Unauthorized
+        return {'message': 'error', 'description': 'Unauthorized'}
+    
+ # Fungsi endpoint Get Keranjang
+@view_config(route_name='get-cart', renderer="json", request_method="GET")
+def cart_detail(request):
+    auth_user = auth_jwt_verify(request)
+    if auth_user:
+        with connection.cursor() as cursor:
+            # Ambil detail item dari tabel items dan cart berdasarkan user_id
+            sql = """
+                SELECT items.id, items.name, items.price, cart.count_item
+                FROM items
+                INNER JOIN cart ON items.id = cart.item_id
+                WHERE cart.user_id = %s
+            """
+            cursor.execute(sql, (auth_user['sub'],))
+            cart_items = cursor.fetchall()
+
+        if cart_items:
+            # Hitung total item dan total harga
+            total_items = sum(item['count_item'] for item in cart_items)
+            total_price = sum(int(item['price']) * item['count_item'] for item in cart_items)
+
+            # Format data hasil query dan tambahkan total item dan total harga
+            formatted_cart_items = []
+            for item in cart_items:
+                formatted_cart_items.append({
+                    'id': item['id'],
+                    'name': item['name'],
+                    'price': int(item['price']),
+                    'count_item': item['count_item']
+                })
+
+            return {
+                'message': 'ok',
+                'description': 'Cart details retrieved successfully!',
+                'cart_items': formatted_cart_items,
+                'total_items': total_items,
+                'total_price': total_price
+            }
+        else:
+            return {
+                'message': 'ok',
+                'description': 'Tidak Ada Barang',
+                'cart_items': [],
+                'total_items': 0,
+                'total_price': 0
+            }
+    else:
+        request.response.status = 401  # Unauthorized
+        return {'message': 'error', 'description': 'Unauthorized'}
+
             
 if __name__ == "__main__":
     with Configurator() as config:
@@ -393,6 +514,8 @@ if __name__ == "__main__":
         # config.add_view(get_image, route_name='get-image')
         config.add_route('items', '/items')
         config.add_route('detail-item', 'detail-item/{id}')
+        config.add_route('add-item', 'add-item')
+        config.add_route('get-cart', 'get-cart')
         config.scan()
         app = config.make_wsgi_app()
         app = CORS(app, headers="*", methods="*", maxage="86400", origin="*", expose_headers="*")

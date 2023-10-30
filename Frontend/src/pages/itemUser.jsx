@@ -8,24 +8,26 @@ import ModalCRUD from '../components/modals/modal';
 export default function ItemUser() {
     const dispatch = useDispatch();
     const dataItems = useSelector((state) => state?.dataItemUser?.dataItemUser);
-    console.log(dataItems)
-
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null); // Menyimpan item yang dipilih untuk diperbarui
+    const [updateItem, setupdateItem] = useState(null); // Menyimpan item yang dipilih untuk diperbarui
 
     const showModal = (item) => {
-        setSelectedItem(item); // Mengatur item yang dipilih untuk diperbarui
+        setupdateItem(item); // Mengatur item yang dipilih untuk diperbarui
         setIsModalVisible(true);
     };
 
+    const confimHandle = (item) => {
+        const message = window.confirm("Are You Sure?")
+        if (message){
+            dispatch(deleteData(item.id));
+        }
+    }
+
     const hideModal = () => {
-        setSelectedItem(null); // Mengatur item yang dipilih kembali ke null
+        setupdateItem(null); // Mengatur item yang dipilih kembali ke null
         setIsModalVisible(false);
     };
 
-    const handleDelete = (itemId) => {
-        dispatch(deleteData(itemId));
-    };
 
     useEffect(() => {
         dispatch(getItemUserData());
@@ -42,23 +44,31 @@ export default function ItemUser() {
                         <Col key={item?.id} className="mb-3">
                             <Card>
                                 <Card.Body>
-                                    <Card.Title>
-                                        <h1>{item.name}</h1>
-                                    </Card.Title>
-                                    <Card.Text>
-                                        <h5>Deskripsi</h5>
+                                    <h1>
+                                        {item.name}
+                                    </h1>
+                                    <b>
+                                        Deskripsi
+                                    </b>
+                                    <div>
                                         {item.description}
-                                    </Card.Text>
-                                    <Card.Text>
-                                        Stok tersisa = 
+                                    </div>
+                                    <b>
+                                        Stok tersisa
+                                    </b>
+                                    <div>
                                         {item.stok}
-                                    </Card.Text>
-                                    
-                                    <Card.Text>{item.price}</Card.Text>
-                                    <Button variant='outline-primary' onClick={() => showModal(item)}>
+                                    </div>
+                                    <b>
+                                        Harga
+                                    </b>                                    
+                                    <div>
+                                        {item.price.toLocaleString('id-ID', {minimumIntegerDigits: 3})}
+                                    </div>
+                                    <Button variant='outline-primary' className='mt-3' onClick={() => showModal(item)}>
                                         Perbarui
                                     </Button>
-                                    <Button variant='outline-danger' className='mx-3' onClick={() => handleDelete(item.id)}>
+                                    <Button variant='outline-danger' className='mt-3 mx-3' onClick={() => confimHandle(item)}>
                                         Hapus
                                     </Button>
                                 </Card.Body>
@@ -75,7 +85,7 @@ export default function ItemUser() {
                     </Col>
                 )}
             </Row>
-            <ModalCRUD show={isModalVisible} onHide={hideModal} selectedItem={selectedItem} />
+            <ModalCRUD show={isModalVisible} onHide={hideModal} updateItem={updateItem} selectedItem={null} />
         </>
     );
 }

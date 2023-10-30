@@ -1,16 +1,18 @@
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
+import { Navbar, Container, Nav, Toast, ToastContainer, Col, Table } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { logoutData } from '../../redux/actions/logout';
 import IMAGES from '../../assets/images/images';
+import { getCartData } from '../../redux/actions/getCart';
 
 export default function Navigation() {
+    const data = useSelector((state) => state?.dataCart?.cart_items)
+    const [showToast, setShowToast] = useState(false);
     const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    console.log(data)
 
     const handleLogout = () => {
         dispatch(logoutData(navigate)); // Dispatch the logout action
@@ -61,15 +63,16 @@ export default function Navigation() {
                     <Nav className="ms-auto" id="navigation">
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <Link to="/panel" className='nav-link'>
+                                <Link to="/panel" className={`nav-link ${showToast ? 'disabled' : ''}`}>
                                     <img src={IMAGES.icon2} alt="" width={18} className='me-1 mb-1'/>
                                     Home
                                 </Link>
                             </li>
                         </ul>
+
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <Link to="/panel/item-user" className='nav-link'>
+                                <Link to="/panel/item-user" className={`nav-link ${showToast ? 'disabled' : ''}`}>
                                     <img src={IMAGES.icon4} alt="" width={18} className='me-1 mb-1'/>
                                     Produk Anda
                                 </Link>
@@ -78,25 +81,64 @@ export default function Navigation() {
 
                         <ul className="navbar-nav">
                             <li className="nav-item">
+                                <Link to="#" className='nav-link' onClick={() => {
+                                    dispatch(getCartData());
+                                    setShowToast(true);
+                                }}>
+                                    <img src={IMAGES.icon4} alt="" width={18} className='me-1 mb-1' />
+                                    Keranjang
+                                </Link>
+                            </li>
+                        </ul>
+                        <ul className="navbar-nav">
+                            <li className="nav-item">
                                 <Link to="#" className='nav-link' onClick={handleLogout}>
                                     <img src={IMAGES.icon3} alt="" width={18} className='me-1 mb-1'/>
                                     Logout
                                 </Link>
                             </li>
                         </ul>
-
-                        {/*<ul className="navbar-nav">
-                            <li className="nav-item">
-                                <Link to="/ryanporto/panel/api/news" className='nav-link'>New&apos;s</Link>
-                            </li>
-                        </ul>
-
-                        <ul className="navbar-nav">
-                            <li className="nav-item">
-                                <Link to="/ryanporto/panel/contact" className='nav-link'>Contact</Link>
-                            </li>
-                        </ul> */}
                     </Nav>
+                    <ToastContainer position="top-end" className='mt-5 mx-5' >
+                        <Toast show={showToast} onClick={() => setShowToast(false)} onClose={() => setShowToast(false)}  delay={10_000} autohide style={{minWidth:'500px'}}>
+                            <Toast.Header>
+                                <strong className="me-auto">Keranjang Anda</strong>
+                            </Toast.Header>
+                            <Toast.Body>
+                                <Table striped bordered hover responsive>
+                                    <thead>
+                                        <tr>
+                                            <th>Nama Barang</th>
+                                            <th>Total Jumlah</th>
+                                            <th>Harga</th>
+                                            <th>Total Harga</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {data && data.length > 0 ? (
+                                            data.map((item) => (
+                                                <tr key={item?.id}>
+                                                    <td>{item.name}</td>
+                                                    <td>{item.count_item}</td>
+                                                    <td>{item.price.toLocaleString('id-ID', { minimumIntegerDigits: 3 })}</td>
+                                                    <td>{(item.price * item.count_item).toLocaleString('id-ID', { minimumIntegerDigits: 3 })}</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="3">Belum ada item dalam keranjang</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </Table>
+                                <span>
+                                    Total Keseluruhan Harga: <b>{data?.reduce((total, item) => total + (item.price * item.count_item), 0).toLocaleString('id-ID', { minimumIntegerDigits: 3 })}
+                                    </b>
+                                </span>
+                            </Toast.Body>
+                          
+                        </Toast>
+                    </ToastContainer>
                 </Navbar.Collapse>
             </Container>
         </Navbar>

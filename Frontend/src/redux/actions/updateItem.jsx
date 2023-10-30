@@ -26,8 +26,9 @@ export const updateData = (itemId, updateItemData) => {
     return async (dispatch) => {
         dispatch(updateItem());
         try {
-            await axiosInstance.put(`/item-user/${itemId}/update`, updateItemData);
+            const data = await axiosInstance.put(`/item-user/${itemId}/update`, updateItemData);
             dispatch(updateItemSuccess());
+            alert(data?.data?.description)
             dispatch(getItemUserData());
         } catch (error) {
             dispatch(updateItemFailed(error.message));
