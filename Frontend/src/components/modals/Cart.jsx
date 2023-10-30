@@ -3,7 +3,6 @@ import { Dropdown } from 'react-bootstrap';
 const Cart = ({ cartItems }) => {
     return (
         <Dropdown.Menu>
-            {console.log(cartItems)}
             {cartItems?.length > 0 ? (
                 cartItems.map((item, index) => (
                     <Dropdown.Item key={index}>

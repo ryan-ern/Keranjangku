@@ -3,6 +3,7 @@ const IMAGES = {
     icon2: new URL('./icons8-home.svg', import.meta.url).href,
     icon3: new URL('./icons8-logout-32.png', import.meta.url).href,
     icon4: new URL('./icons8-note-50.png', import.meta.url).href,
+    icon5: new URL('./icons8-cart-80.png', import.meta.url).href,
 }
 
 export default IMAGES

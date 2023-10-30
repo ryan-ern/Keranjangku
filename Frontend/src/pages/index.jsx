@@ -24,7 +24,6 @@ export default function Home() {
     };
 
     const handleSubmit = (item) => {
-        // console.log(item);
         const formData = {
             item_id: item.id, // ID item yang akan ditambahkan ke keranjang
             count_item: parseInt(countItem)  // Jumlah item yang akan ditambahkan

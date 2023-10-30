@@ -1,6 +1,7 @@
 import { ADD_ITEM, ADD_ITEM_FAILED, ADD_ITEM_SUCCESS } from "../actionTypes"
 import { getItemData } from "./getItem"
 import axiosInstance from "../../helper/axios-helper"
+import { getCartData } from "./getCart"
 
 const addItem = (formData) => {
     return {
@@ -33,6 +34,7 @@ export const addData = (formData) => {
             dispatch(addItemSuccess(dataAdd));
             alert(dataAdd?.description)
             await dispatch(getItemData());
+            await dispatch(getCartData());
         } catch (error) {
             dispatch(addItemFailed(error.message));
         }

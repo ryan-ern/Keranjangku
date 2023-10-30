@@ -1,6 +1,7 @@
 import { DELETE_ITEM, DELETE_ITEM_FAILED, DELETE_ITEM_SUCCESS } from "../actionTypes"
 import axiosInstance from "../../helper/axios-helper"
 import { getItemUserData } from "./getItem"
+import { getCartData } from "./getCart"
 
 const deleteItem = () => {
     return {
@@ -31,6 +32,7 @@ export const deleteData = (itemId) => {
             dispatch(deleteItemSuccess(data.data));
             alert(data?.data?.description)
             dispatch(getItemUserData());
+            dispatch(getCartData());
         } catch (error) {
             dispatch(deleteItemFailed(error.message));
         }

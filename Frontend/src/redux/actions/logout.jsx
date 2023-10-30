@@ -23,7 +23,7 @@ export const logoutData = (navigate) => {
             dispatch(logoutSuccess());
             navigate('/login');
         } catch (error) {
-            console.error(error);
+            alert(error);
         }
     };
 };

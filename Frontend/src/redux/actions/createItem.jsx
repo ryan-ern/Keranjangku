@@ -1,6 +1,7 @@
 import { CREATE_ITEM, CREATE_ITEM_FAILED, CREATE_ITEM_SUCCESS } from "../actionTypes"
 import { getItemUserData } from "./getItem"
 import axiosInstance from "../../helper/axios-helper"
+import { getCartData } from "./getCart"
 
 const createItem = (formData) => {
     return {
@@ -33,6 +34,7 @@ export const createData = (formData) => {
             dispatch(createItemSuccess(dataCreate));
             alert(dataCreate?.description)
             await dispatch(getItemUserData());
+            await dispatch(getCartData());
         } catch (error) {
             dispatch(createItemFailed(error.message));
         }

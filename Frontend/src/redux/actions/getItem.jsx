@@ -4,6 +4,7 @@ import {
     GET_ITEM_USER, GET_ITEM_USER_FAILED, GET_ITEM_USER_SUCCESS
 } from "../actionTypes"
 import axiosInstance from "../../helper/axios-helper"
+import { getCartData } from "./getCart"
 
 /**
  * GET ITEM BERDASARAKN USER
@@ -30,6 +31,7 @@ export const getItemUserData = () => {
             .then((response) => {
                 const dataItemUser = response.data.data;
                 dispatch(getItemUserSuccess(dataItemUser));
+                dispatch(getCartData());
             })
             .catch((error) => {
                 dispatch(getItemUserFailed(error.message))

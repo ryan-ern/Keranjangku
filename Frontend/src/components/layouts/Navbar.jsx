@@ -1,4 +1,4 @@
-import { Navbar, Container, Nav, Toast, ToastContainer, Col, Table } from 'react-bootstrap';
+import { Navbar, Container, Nav, Toast, ToastContainer, Table } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +12,6 @@ export default function Navigation() {
     const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    console.log(data)
 
     const handleLogout = () => {
         dispatch(logoutData(navigate)); // Dispatch the logout action
@@ -85,7 +84,7 @@ export default function Navigation() {
                                     dispatch(getCartData());
                                     setShowToast(true);
                                 }}>
-                                    <img src={IMAGES.icon4} alt="" width={18} className='me-1 mb-1' />
+                                    <img src={IMAGES.icon5} alt="" width={18} className='me-1 mb-1' />
                                     Keranjang
                                 </Link>
                             </li>
@@ -126,14 +125,25 @@ export default function Navigation() {
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="3">Belum ada item dalam keranjang</td>
+                                                <td colSpan="4">
+                                                    <center>
+                                                        Belum ada item dalam keranjang
+                                                    </center>
+                                                </td>
                                             </tr>
                                         )}
                                     </tbody>
                                 </Table>
                                 <span>
-                                    Total Keseluruhan Harga: <b>{data?.reduce((total, item) => total + (item.price * item.count_item), 0).toLocaleString('id-ID', { minimumIntegerDigits: 3 })}
-                                    </b>
+                                    {data && data.length > 0 ? (
+                                        <span>
+                                            Total Keseluruhan Harga: <b>{data?.reduce((total, item) => total + (item.price * item.count_item), 0).toLocaleString('id-ID', { minimumIntegerDigits: 3 })}
+                                            </b>
+                                        </span>
+                                    
+                                    ):(
+                                        <span></span>
+                                    )}
                                 </span>
                             </Toast.Body>
                           
