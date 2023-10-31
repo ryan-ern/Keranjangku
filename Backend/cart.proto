@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+service CartService {
+    rpc GetCartDetails (CartRequest) returns (CartResponse);
+}
+
+message CartRequest {
+    string userId = 1;
+}
+
+message CartItem {
+    int32 id = 1;
+    string name = 2;
+    int32 price = 3;
+    int32 count_item = 4;
+}
+
+message CartResponse {
+    string message = 1;
+    string description = 2;
+    repeated CartItem cart_items = 3;
+    int32 total_items = 4;
+    int32 total_price = 5;
+}
