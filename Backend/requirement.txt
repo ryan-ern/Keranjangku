@@ -3,3 +3,6 @@ PyMySQL==1.1.0
 pyramid==2.0.2
 pytest==7.4.3
 wsgicors==0.7.0
+grpcio==1.59.2
+grpcio-tools==1.59.2
+protobuf==4.24.4

@@ -115,7 +115,8 @@ def get_auth_info(request):
     else:
         return {
             'message': 'error',
-            'description': 'User is not authenticated'
+            'description': 'User is not authenticated',
+            'isLogin': False
         }
 
 # fungsi endpoint register
