@@ -1,13 +1,17 @@
 # Keranjangku
 UTS - Pemrograman Web Lanjut
 
-## Cara Menggunakan Project ini
+## Cara Menggunakan Project ini (BACKEND)
 - install pip, python dan mysql terlebih dahulu
 - masuk ke directroy backend dengan `cd Backend`
 - install library yang dibutuhkan dengan `pip install -r requirements.txt`
 - Import ke database anda menggunakan file `keranjangku.sql`
 - jalankan projek dengan `python app.py`
 - jalankan unit test dengan `python test.py`
+
+## Cara Menggunakan Project ini (FRONTEND)
+- install depedencies yang dibutuhkan dengan `npm install` atau `yarn`
+- jalankan project dengan `npm dev` atau `yarn dev`
 
 ## Fitur Projek ini
 - BE dan FE berjalan secara terpisah (Microservices)
